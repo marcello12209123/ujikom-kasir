@@ -1,45 +1,31 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Member;
-use App\Models\Sale;
+
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
-        $pembeliMember = 9;
-        $pembeliNonMember = 15;
+        $purchases = DB::table('sales')
+            ->selectRaw('MONTH(created_at) as month, SUM(total_amount) as total')
+            ->groupByRaw('MONTH(created_at)')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
 
-        $pembeliJumlah = Member::all()->count();
-        $memberKondisi = Member::where('member_code', 'MBR-0001')->count();
-        $salesToday = Sale::where('created_at', Carbon::today())->get();
+        $monthLabels = [];
+        $totals = [];
 
-        $salesTodayCount = $salesToday->count();
+        foreach ($purchases as $purchase) {
+            $monthLabels[] = Carbon::create()->month($purchase->month)->format('F');
+            $totals[] = $purchase->total;
+        }
 
-        
-
-        return view('home', compact('salesTodayCount'));
-    }
-
-    public function blank()
-    {
-        return view('layouts.blank-page');
+        return view('home', [
+            'months' => $monthLabels,
+            'totals' => $totals
+        ]);
     }
 }

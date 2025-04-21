@@ -30,14 +30,13 @@
                 <div class="section-body">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <form action="{{ route('sales.store') }}" method="POST">
+                            <form action="{{ route('sales.store') }}" method="POST" id="sales-form">
                                 @csrf
                                 <div class="row">
                                     <div class="col-md-6">
                                         <h5>Produk yang Dibeli</h5>
                                         <ul class="list-group">
                                             @foreach ($products as $key => $product)
-                                            dd)
                                                 <li class="list-group-item">
                                                     <strong>{{ $key + 1 . '. ' . $product->name}}</strong>
                                                     <br>Harga: Rp {{ number_format($product->price, 0, ',', '.') }}
@@ -73,7 +72,6 @@
 
                                         <div class="form-group mb-3" id="member_selection" style="display: none;">
                                             <label for="member_phone">Pilih Member (Berdasarkan Nomor Telepon)</label>
-                                            <br>
                                             <select class="form-control select2" id="member_phone" name="member_id">
                                                 <option value="">Pilih Member</option>
                                                 @foreach ($members as $member)
@@ -84,8 +82,9 @@
 
                                         <div class="form-group mb-3">
                                             <label for="total_pay">Jumlah Bayar</label>
-                                            <input type="text" class="form-control" id="total_pay" value="">
+                                            <input type="text" class="form-control" id="total_pay" value="" required>
                                             <input type="hidden" id="total_pay_numeric" name="total_pay">
+                                            <div id="payment-error" class="text-danger mt-1" style="display: none;">Jumlah bayar kurang dari total belanja</div>
                                         </div>
                                     </div>
                                 </div>
@@ -129,10 +128,20 @@
             } else {
                 $(this).val('');
             }
+
+            $('#payment-error').hide(); // hide error while typing
         });
 
-        $('form').on('submit', function() {
-            let totalPay = $('#total_pay').val().replace(/\D/g, '');
+        $('#sales-form').on('submit', function(e) {
+            const totalPay = parseInt($('#total_pay').val().replace(/\D/g, '')) || 0;
+            const totalAmount = parseInt($('input[name="total_amount"]').val());
+
+            if (totalPay < totalAmount) {
+                e.preventDefault();
+                $('#payment-error').show();
+                return false;
+            }
+
             $('#total_pay_numeric').val(totalPay);
         });
 

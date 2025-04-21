@@ -113,11 +113,12 @@ class SaleController extends Controller
     {
         $sale = Sale::where('id', $id)->firstOrFail();
     
-        $productData = $sale->product_data;
-    
+        $productData = json_decode($sale->product_data, true); // ✅ ubah ke array asosiatif
+
         $totalProductPrice = array_reduce($productData, function ($carry, $item) {
             return $carry + ($item['price'] * $item['quantity']);
         }, 0);
+        
     
         $discount = $totalProductPrice - $sale->total_amount;
     

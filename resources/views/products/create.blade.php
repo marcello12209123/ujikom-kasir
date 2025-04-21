@@ -65,6 +65,11 @@
                                         <img id="imagePreview" src="#" alt="Preview Gambar" style="display: none; max-width: 200px; max-height: 200px; object-fit: cover;" class="rounded shadow-sm border">
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label for="diskon">Diskon</label>
+                                    <input type="number" name="diskon" class="form-control" placeholder="Diskon (%)">
+                                </div>
+                                
                         
                                 <div class="d-flex justify-content-between">
                                     <a href="{{ route('products.index') }}" class="btn btn-secondary">

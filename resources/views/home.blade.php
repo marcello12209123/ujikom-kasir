@@ -1,36 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', 'Dashboard Pembelian')
 
 @section('content')
 <div class="main-content-table">
-    <section class="section">
-        <div class="margin-content">
-            <div class="container-sm">
-                <div class="section-header">
-                    <h1>User</h1>
-                </div>
-                <div class="section-body">
+    <section class="section py-5">
+        <div class="container-sm">
+            <h2 class="mb-5 text-center">📊 Dashboard Pembelian Produk per Bulan</h2>
 
-                    <!-- Wrapper untuk Chart yang sejajar -->
-                    <div class="row">
-                        <!-- Chart pertama -->
-                        <div class="col-md-6">
-                            <div class="chart-wrapper">
-                                <h1>Votes Bar Chart</h1>
-                                <canvas id="myChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Chart kedua -->
-                        <div class="col-md-6">
-                            <div class="chart-wrapper">
-                                <h1>Votes Pie Chart</h1>
-                                <canvas id="2Chart"></canvas>
-                            </div>
-                        </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="card shadow-sm border-0 rounded-4 p-4">
+                        <h5 class="mb-3 text-center">Pembelian per Bulan (Bar Chart)</h5>
+                        <canvas id="barChart" height="120"></canvas>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -38,42 +21,34 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-  const ctx = document.getElementById('myChart');
-  
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green'],
-      datasets: [{
-        label: '# of Votes',
-        data: [, 19, 3, 5],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
+    const barChart = new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($months) !!},
+            datasets: [{
+                label: 'Jumlah Pembelian',
+                backgroundColor: '#3b82f6',
+                borderRadius: 8,
+                data: {!! json_encode($totals) !!}
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat().format(value);
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-  });
-
-  const cty = document.getElementById('2Chart');
-  
-  new Chart(cty, {
-    type: 'pie',
-    data: {
-      labels: ['Jumlah', 'memberKondisi', ''],
-      datasets: [{
-        label: '# of Votes',
-        data: [ '89', '9'],
-        borderWidth: 1
-      }]
-    }
-  });
+    });
 </script>
-
 @endsection
